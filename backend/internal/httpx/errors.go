@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,12 @@ func FromError(c *gin.Context, err error) {
 	case errors.Is(err, domain.ErrConflict):
 		Error(c, http.StatusConflict, "conflict", "Data bertentangan dengan data yang sudah ada.", nil)
 	default:
+		slog.Error("unhandled request error",
+			"error", err,
+			"method", c.Request.Method,
+			"path", c.Request.URL.Path,
+			"request_id", c.GetString(RequestIDKey),
+		)
 		Error(c, http.StatusInternalServerError, "internal_error", "Terjadi kesalahan internal.", nil)
 	}
 }

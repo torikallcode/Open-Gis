@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"net/mail"
 	"regexp"
 	"strings"
@@ -395,22 +394,7 @@ func (s *ProjectService) ensureProjectedCRS(ctx context.Context, srid int) error
 }
 
 func (s *ProjectService) withTx(ctx context.Context, fn func(pgx.Tx) error) error {
-	tx, err := s.pool.Begin(ctx)
-	if err != nil {
-		return fmt.Errorf("begin transaction: %w", err)
-	}
-	defer func() {
-		_ = tx.Rollback(ctx)
-	}()
-
-	if err := fn(tx); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("commit transaction: %w", err)
-	}
-	return nil
+	return withTransaction(ctx, s.pool, fn)
 }
 
 func validateProjectInput(input *domain.CreateProjectInput) *domain.ValidationError {

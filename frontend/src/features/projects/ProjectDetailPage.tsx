@@ -14,8 +14,11 @@ import { MembersPanel } from './components/MembersPanel'
 import { ProjectStatusBadge } from './components/ProjectStatusBadge'
 import { crsLabel } from './crs'
 import { useDeleteProject, useProject } from './hooks'
+import { ProjectAreasPanel } from '@/features/surveys/components/ProjectAreasPanel'
+import { ProjectSurveysPanel } from '@/features/surveys/components/ProjectSurveysPanel'
+import { ProjectParcelsPanel } from '@/features/parcels/components/ProjectParcelsPanel'
 
-type Tab = 'ringkasan' | 'anggota'
+type Tab = 'ringkasan' | 'anggota' | 'survei' | 'area' | 'bidang'
 
 export function ProjectDetailPage() {
   const { projectId } = useParams()
@@ -115,6 +118,9 @@ export function ProjectDetailPage() {
           [
             { id: 'ringkasan', label: 'Ringkasan' },
             { id: 'anggota', label: 'Anggota' },
+            { id: 'survei', label: 'Survei' },
+            { id: 'area', label: 'Area kerja' },
+            { id: 'bidang', label: 'Bidang' },
           ] as { id: Tab; label: string }[]
         ).map((item) => (
           <button
@@ -184,8 +190,14 @@ export function ProjectDetailPage() {
             </div>
           </dl>
         </Card>
-      ) : (
+      ) : tab === 'anggota' ? (
         <MembersPanel projectId={project.id} />
+      ) : tab === 'survei' ? (
+        <ProjectSurveysPanel projectId={project.id} />
+      ) : tab === 'area' ? (
+        <ProjectAreasPanel projectId={project.id} />
+      ) : (
+        <ProjectParcelsPanel projectId={project.id} />
       )}
     </div>
   )

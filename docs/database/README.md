@@ -33,8 +33,10 @@ Riwayat migration:
 | --- | --- |
 | `000001` | Ekstensi PostGIS, identity/RBAC, projects, project_members, audit_logs |
 | `000002` | `projects.updated_by` + index pencarian/urut proyek |
+| `000003` | `surveys`, `survey_areas`, `survey_points` + index spasial |
+| `000004` | `parcels`, `parcel_versions` + index spasial dan unique kode |
 
-## Skema saat ini (Sprint 3A)
+## Skema saat ini (Sprint 4)
 
 | Tabel | Fungsi |
 | --- | --- |
@@ -46,9 +48,14 @@ Riwayat migration:
 | `projects` | Proyek survei + `crs_epsg` metrik + `updated_by`, soft delete |
 | `project_members` | Peran pengguna per proyek |
 | `audit_logs` | Catatan aktivitas append-only |
+| `surveys` | Kegiatan survei per proyek, soft delete |
+| `survey_areas` | Area kerja proyek (`MultiPolygon` 4326) + luas metrik |
+| `survey_points` | Titik survei (`Point` 4326), unik per survei |
+| `parcels` | Bidang tanah (`MultiPolygon` 4326), atribut JSONB, status, versi aktif |
+| `parcel_versions` | Snapshot immutable setiap perubahan bidang |
 
-Tabel spasial dan operasional (`surveys`, `survey_areas`, `survey_points`,
-`parcels`, `validation_results`, media, dsb.) ditambahkan pada Sprint 3B–6.
+Tabel spasial dan operasional lain (`validation_results`, media, dsb.)
+ditambahkan pada Sprint 5–6.
 
 ## Konvensi
 
@@ -64,6 +71,17 @@ Tabel spasial dan operasional (`surveys`, `survey_areas`, `survey_points`,
   `entity_type`, `entity_id`) agar jejak tidak ikut terhapus.
 - `projects.crs_epsg` mereferensikan `spatial_ref_sys` dan wajib CRS proyeksi.
   Lihat [ADR-0001](../architecture/decisions/0001-crs-strategy.md).
+- Geometri disimpan EPSG:4326 dengan `CHECK (ST_SRID(...) = 4326)`, GiST index,
+  dan `CHECK (ST_IsValid(...))` untuk area. Area dihitung backend dengan
+  `ST_Area(ST_Transform(boundary, projects.crs_epsg))`.
+- `survey_points` unik pada `(survey_id, point_code)`; akurasi tidak boleh
+  negatif.
+- `parcels` memakai partial unique index `(project_id, lower(parcel_code))`
+  `WHERE deleted_at IS NULL`, sehingga kode unik per proyek dan dapat dipakai
+  lagi setelah soft delete.
+- `parcel_versions` menyimpan snapshot penuh setiap perubahan; versi 1 dibuat
+  saat create. `parcels.current_version` menunjuk versi terbaru. Lihat
+  [ADR-0002](../architecture/decisions/0002-parcel-versioning.md).
 
 ## Seed
 

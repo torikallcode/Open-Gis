@@ -3,10 +3,10 @@
 Web GIS untuk manajemen survei dan pemetaan: proyek, kegiatan survei, titik
 koordinat, bidang tanah, validasi geometri, dokumentasi lapangan, dan pelaporan.
 
-> **Status:** Sprint 1 (Project Foundation), Sprint 2 (GIS Map Viewer), dan
-> Sprint 3A (Project Management) selesai. Sprint 3B (Survey Management) berikutnya.
-> Lihat [Roadmap](#roadmap) dan
-> [ADR-0001](docs/architecture/decisions/0001-crs-strategy.md).
+> **Status:** Sprint 1–4 selesai (foundation, map viewer, project & survey
+> management, parcel management). Sprint 5 (Spatial Validation) berikutnya.
+> Lihat [Roadmap](#roadmap), [ADR-0001](docs/architecture/decisions/0001-crs-strategy.md),
+> dan [ADR-0002](docs/architecture/decisions/0002-parcel-versioning.md).
 
 ## Stack
 
@@ -186,8 +186,83 @@ DELETE /api/v1/projects/:id/members/:userId
 **Aktor development:** selama autentikasi belum ada (Sprint 7), backend memakai
 `DEV_USER_EMAIL`. Endpoint domain **menolak semua request dengan 401** bila
 `APP_ENV=production`. Otorisasi tetap dicek: admin global boleh semuanya,
-`manager` mengelola proyeknya, `surveyor` hanya baca pada Sprint 3A, dan
-non-anggota mendapat 403.
+`manager` mengelola proyeknya, `surveyor` mengelola survei dan titik di
+proyeknya, dan non-anggota mendapat 403.
+
+## Survei (Sprint 3B)
+
+Halaman `/surveys` menyediakan:
+
+- Daftar survei dengan filter proyek, status, rentang tanggal, pencarian, dan
+  pagination.
+- Form create/edit survei (proyek, nama, tanggal, metode, status, catatan).
+  Proyek tidak dapat diubah saat edit.
+- Detail survei: ringkasan, peta area kerja + titik, dan tabel titik koordinat.
+- Titik koordinat: input manual atau klik peta melalui tombol "Ambil dari peta".
+  Kode titik unik per survei; akurasi, elevasi, sumber, dan waktu opsional.
+- Area kerja proyek digambar sebagai polygon di tab **Area kerja** pada detail
+  proyek. Backend memvalidasi geometri (PostGIS) dan menghitung luas dari
+  `projects.crs_epsg`, bukan dari derajat.
+- Status survei: `draft`, `in_progress`, `completed`, `cancelled`.
+
+Endpoint:
+
+```
+GET    /api/v1/surveys
+POST   /api/v1/surveys
+GET    /api/v1/surveys/:id
+PUT    /api/v1/surveys/:id
+DELETE /api/v1/surveys/:id                     (soft delete)
+GET    /api/v1/surveys/:id/points
+POST   /api/v1/surveys/:id/points
+PUT    /api/v1/surveys/:id/points/:pointId
+DELETE /api/v1/surveys/:id/points/:pointId
+GET    /api/v1/projects/:id/survey-areas
+POST   /api/v1/projects/:id/survey-areas
+DELETE /api/v1/survey-areas/:areaId            (soft delete)
+```
+
+Otorisasi: `surveyor` dapat membuat survei dan titik di proyeknya serta
+mengubah survei miliknya; `manager`/admin dapat mengelola semua survei dan area;
+`gis_analyst`/`supervisor`/`viewer` hanya baca. Geometri area dikirim sebagai
+GeoJSON RFC 7946 (EPSG:4326) dan disimpan sebagai `MultiPolygon` 4326.
+
+## Bidang Tanah (Sprint 4)
+
+Halaman `/parcels` menyediakan:
+
+- Daftar bidang dengan filter proyek, survei, status, pencarian, dan pagination.
+- Bidang baru: atribut inti, atribut tambahan (key-value → JSONB), dan digitasi
+  polygon wajib.
+- Detail bidang: status, luas otoritatif backend, atribut, peta editor, dan
+  riwayat versi.
+- Edit geometri: gambar ulang polygon atau geser vertex (OpenLayers Modify),
+  dengan `change_reason` opsional.
+- Workflow status: `draft → submitted → under_review → approved/rejected`,
+  `rejected → draft`. Geometri/atribut terkunci setelah `submitted`.
+- Riwayat versi immutable: versi 1 dibuat saat create; setiap perubahan
+  menambah snapshot baru. Lihat
+  [ADR-0002](docs/architecture/decisions/0002-parcel-versioning.md).
+- Tab **Bidang** pada detail proyek: peta semua bidang, popup atribut, dan tabel.
+- Kode bidang unik case-insensitive per proyek; soft delete.
+
+Endpoint:
+
+```
+GET    /api/v1/parcels
+POST   /api/v1/parcels
+GET    /api/v1/parcels/:id
+PUT    /api/v1/parcels/:id                 (atribut, bukan geometri)
+DELETE /api/v1/parcels/:id                 (soft delete)
+PUT    /api/v1/parcels/:id/geometry
+PUT    /api/v1/parcels/:id/status
+GET    /api/v1/parcels/:id/versions
+GET    /api/v1/projects/:id/features       (GeoJSON FeatureCollection)
+```
+
+Otorisasi: `surveyor` membuat/mengubah bidang di proyeknya (status draft atau
+rejected), `supervisor`/`manager`/admin melakukan review dan keputusan status,
+`manager`/admin menghapus. Luas selalu dihitung backend pada CRS proyek.
 
 ## Peta (Sprint 2)
 
@@ -220,13 +295,15 @@ Catatan:
 ## Database
 
 - Skema saat ini: `users`, `roles`, `permissions`, `role_permissions`,
-  `user_roles`, `projects`, `project_members`, `audit_logs`.
-- `projects` memiliki `updated_by` dan mendukung soft delete.
-- Tabel spasial (`surveys`, `survey_areas`, `survey_points`, `parcels`, ...)
-  menyusul di Sprint 3B–4.
-- Semua geometri nantinya disimpan pada **EPSG:4326**; luas metrik dihitung
-  backend memakai `projects.crs_epsg`. Baca
-  [ADR-0001](docs/architecture/decisions/0001-crs-strategy.md).
+  `user_roles`, `projects`, `project_members`, `audit_logs`, `surveys`,
+  `survey_areas`, `survey_points`, `parcels`, `parcel_versions`.
+- `projects`, `surveys`, `survey_areas`, dan `parcels` mendukung soft delete;
+  `survey_points` dihapus permanen dengan snapshot audit.
+- Geometri (`survey_areas.boundary`, `survey_points.location`,
+  `parcels.boundary`) disimpan pada **EPSG:4326** dengan GiST index; luas
+  dihitung backend memakai `projects.crs_epsg`.
+- `parcel_versions` menyimpan snapshot penuh immutable setiap perubahan.
+  Baca [ADR-0002](docs/architecture/decisions/0002-parcel-versioning.md).
 
 Detail workflow migration dan konvensi: [docs/database/README.md](docs/database/README.md).
 
@@ -246,9 +323,9 @@ Detail workflow migration dan konvensi: [docs/database/README.md](docs/database/
 | --- | --- | --- |
 | 1 | Project foundation | Selesai |
 | 2 | GIS map viewer (OpenLayers) | Selesai |
-| 3 | Project & survey management | 3A selesai, 3B berikutnya |
-| 4 | Parcel management | Belum |
-| 5 | Spatial validation | Belum |
+| 3 | Project & survey management | Selesai |
+| 4 | Parcel management | Selesai |
+| 5 | Spatial validation | Berikutnya |
 | 6 | Geotagging & reporting | Belum |
 | 7 | Security & production readiness | Belum |
 

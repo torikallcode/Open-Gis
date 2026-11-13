@@ -47,8 +47,22 @@ func New(cfg *config.Config, log *slog.Logger, db *pgxpool.Pool) *Server {
 
 	projectRepository := repository.NewProjectRepository(db)
 	userRepository := repository.NewUserRepository(db)
+	surveyRepository := repository.NewSurveyRepository(db)
+	areaRepository := repository.NewSurveyAreaRepository(db)
+	pointRepository := repository.NewSurveyPointRepository(db)
+	parcelRepository := repository.NewParcelRepository(db)
+
 	projectService := service.NewProjectService(db, projectRepository, userRepository)
+	surveyService := service.NewSurveyService(db, surveyRepository, projectRepository, userRepository)
+	areaService := service.NewSurveyAreaService(db, areaRepository, projectRepository)
+	pointService := service.NewSurveyPointService(db, pointRepository, surveyRepository, projectRepository)
+	parcelService := service.NewParcelService(db, parcelRepository, projectRepository, surveyRepository)
+
 	projectHandler := handler.NewProjectHandler(projectService)
+	surveyHandler := handler.NewSurveyHandler(surveyService)
+	areaHandler := handler.NewSurveyAreaHandler(areaService)
+	pointHandler := handler.NewSurveyPointHandler(pointService)
+	parcelHandler := handler.NewParcelHandler(parcelService)
 
 	api := engine.Group("/api/v1")
 	api.GET("/health", health.Check)
@@ -66,6 +80,32 @@ func New(cfg *config.Config, log *slog.Logger, db *pgxpool.Pool) *Server {
 	secured.POST("/projects/:id/members", projectHandler.AddMember)
 	secured.PUT("/projects/:id/members/:userId", projectHandler.UpdateMemberRole)
 	secured.DELETE("/projects/:id/members/:userId", projectHandler.RemoveMember)
+
+	secured.GET("/projects/:id/survey-areas", areaHandler.List)
+	secured.POST("/projects/:id/survey-areas", areaHandler.Create)
+	secured.DELETE("/survey-areas/:areaId", areaHandler.Delete)
+
+	secured.GET("/surveys", surveyHandler.List)
+	secured.POST("/surveys", surveyHandler.Create)
+	secured.GET("/surveys/:id", surveyHandler.Get)
+	secured.PUT("/surveys/:id", surveyHandler.Update)
+	secured.DELETE("/surveys/:id", surveyHandler.Delete)
+
+	secured.GET("/surveys/:id/points", pointHandler.List)
+	secured.POST("/surveys/:id/points", pointHandler.Create)
+	secured.PUT("/surveys/:id/points/:pointId", pointHandler.Update)
+	secured.DELETE("/surveys/:id/points/:pointId", pointHandler.Delete)
+
+	secured.GET("/parcels", parcelHandler.List)
+	secured.POST("/parcels", parcelHandler.Create)
+	secured.GET("/parcels/:id", parcelHandler.Get)
+	secured.PUT("/parcels/:id", parcelHandler.Update)
+	secured.DELETE("/parcels/:id", parcelHandler.Delete)
+	secured.PUT("/parcels/:id/geometry", parcelHandler.UpdateGeometry)
+	secured.PUT("/parcels/:id/status", parcelHandler.UpdateStatus)
+	secured.GET("/parcels/:id/versions", parcelHandler.Versions)
+
+	secured.GET("/projects/:id/features", parcelHandler.Features)
 
 	engine.NoRoute(httpx.NotFound)
 

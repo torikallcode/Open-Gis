@@ -47,6 +47,62 @@ export const router = createBrowserRouter([
           return { Component: ProjectFormPage }
         },
       },
+      {
+        path: 'surveys',
+        lazy: async () => {
+          const { SurveysPage } = await import('@/features/surveys/SurveysPage')
+          return { Component: SurveysPage }
+        },
+      },
+      {
+        path: 'surveys/new',
+        lazy: async () => {
+          const { SurveyFormPage } = await import('@/features/surveys/SurveyFormPage')
+          return { Component: SurveyFormPage }
+        },
+      },
+      {
+        path: 'surveys/:surveyId',
+        lazy: async () => {
+          const { SurveyDetailPage } = await import('@/features/surveys/SurveyDetailPage')
+          return { Component: SurveyDetailPage }
+        },
+      },
+      {
+        path: 'surveys/:surveyId/edit',
+        lazy: async () => {
+          const { SurveyFormPage } = await import('@/features/surveys/SurveyFormPage')
+          return { Component: SurveyFormPage }
+        },
+      },
+      {
+        path: 'parcels',
+        lazy: async () => {
+          const { ParcelsPage } = await import('@/features/parcels/ParcelsPage')
+          return { Component: ParcelsPage }
+        },
+      },
+      {
+        path: 'parcels/new',
+        lazy: async () => {
+          const { ParcelFormPage } = await import('@/features/parcels/ParcelFormPage')
+          return { Component: ParcelFormPage }
+        },
+      },
+      {
+        path: 'parcels/:parcelId',
+        lazy: async () => {
+          const { ParcelDetailPage } = await import('@/features/parcels/ParcelDetailPage')
+          return { Component: ParcelDetailPage }
+        },
+      },
+      {
+        path: 'parcels/:parcelId/edit',
+        lazy: async () => {
+          const { ParcelFormPage } = await import('@/features/parcels/ParcelFormPage')
+          return { Component: ParcelFormPage }
+        },
+      },
     ],
   },
 ])

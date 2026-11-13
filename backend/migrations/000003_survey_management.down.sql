@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS survey_points;
+DROP TABLE IF EXISTS survey_areas;
+DROP TABLE IF EXISTS surveys;

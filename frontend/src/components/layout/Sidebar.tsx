@@ -11,8 +11,8 @@ const navItems: NavItem[] = [
   { label: 'Dashboard', to: '/', ready: true },
   { label: 'Peta', to: '/map', ready: true },
   { label: 'Proyek', to: '/projects', ready: true },
-  { label: 'Survei', to: '/surveys', ready: false, sprint: 'Sprint 3' },
-  { label: 'Bidang Tanah', to: '/parcels', ready: false, sprint: 'Sprint 4' },
+  { label: 'Survei', to: '/surveys', ready: true },
+  { label: 'Bidang Tanah', to: '/parcels', ready: true },
   { label: 'Validasi', to: '/validation', ready: false, sprint: 'Sprint 5' },
   { label: 'Laporan', to: '/reports', ready: false, sprint: 'Sprint 6' },
   { label: 'Pengguna', to: '/users', ready: false, sprint: 'Sprint 7' },
@@ -70,7 +70,7 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-slate-800 px-5 py-4 text-xs text-slate-500">
-        Sprint 3A — Proyek
+        Sprint 4 — Bidang
       </div>
     </aside>
   )

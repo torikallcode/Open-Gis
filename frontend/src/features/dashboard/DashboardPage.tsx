@@ -14,8 +14,8 @@ interface ModuleCard {
 const modules: ModuleCard[] = [
   { name: 'Project Management', sprint: 'Sprint 3', ready: true, to: '/projects' },
   { name: 'GIS Map Viewer', sprint: 'Sprint 2', ready: true, to: '/map' },
-  { name: 'Survey Management', sprint: 'Sprint 3', ready: false },
-  { name: 'Parcel Management', sprint: 'Sprint 4', ready: false },
+  { name: 'Survey Management', sprint: 'Sprint 3', ready: true, to: '/surveys' },
+  { name: 'Parcel Management', sprint: 'Sprint 4', ready: true, to: '/parcels' },
   { name: 'Spatial Validation', sprint: 'Sprint 5', ready: false },
   { name: 'Media & Geotagging', sprint: 'Sprint 6', ready: false },
   { name: 'Reporting & Export', sprint: 'Sprint 6', ready: false },
