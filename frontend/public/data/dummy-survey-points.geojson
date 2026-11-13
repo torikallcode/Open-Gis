@@ -1,0 +1,77 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [110.3602, -7.8002] },
+      "properties": {
+        "point_code": "PT-001",
+        "survey_code": "SRV-2026-001",
+        "method": "Total Station (dummy)",
+        "accuracy_m": 0.02,
+        "source": "dummy",
+        "recorded_at": "2026-11-10T08:30:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [110.3618, -7.8004] },
+      "properties": {
+        "point_code": "PT-002",
+        "survey_code": "SRV-2026-001",
+        "method": "Total Station (dummy)",
+        "accuracy_m": 0.03,
+        "source": "dummy",
+        "recorded_at": "2026-11-10T08:42:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [110.3628, -7.8008] },
+      "properties": {
+        "point_code": "PT-003",
+        "survey_code": "SRV-2026-001",
+        "method": "Total Station (dummy)",
+        "accuracy_m": 0.03,
+        "source": "dummy",
+        "recorded_at": "2026-11-10T08:55:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [110.3604, -7.8016] },
+      "properties": {
+        "point_code": "PT-004",
+        "survey_code": "SRV-2026-001",
+        "method": "Total Station (dummy)",
+        "accuracy_m": 0.04,
+        "source": "dummy",
+        "recorded_at": "2026-11-10T09:10:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [110.3619, -7.8018] },
+      "properties": {
+        "point_code": "PT-005",
+        "survey_code": "SRV-2026-001",
+        "method": "Total Station (dummy)",
+        "accuracy_m": 0.05,
+        "source": "dummy",
+        "recorded_at": "2026-11-10T09:22:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [110.3632, -7.8021] },
+      "properties": {
+        "point_code": "PT-006",
+        "survey_code": "SRV-2026-001",
+        "method": "Total Station (dummy)",
+        "accuracy_m": 0.05,
+        "source": "dummy",
+        "recorded_at": "2026-11-10T09:35:00Z"
+      }
+    }
+  ]
+}

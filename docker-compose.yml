@@ -1,0 +1,44 @@
+name: ismw
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: ismw-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ismw_db}
+      POSTGRES_USER: ${POSTGRES_USER:-ismw}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ismw_dev_password}
+      TZ: UTC
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - ismw_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ismw} -d ${POSTGRES_DB:-ismw_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  backend:
+    profiles: ["full"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: production
+      HTTP_PORT: 8080
+      LOG_LEVEL: info
+      DATABASE_URL: postgres://${POSTGRES_USER:-ismw}:${POSTGRES_PASSWORD:-ismw_dev_password}@db:5432/${POSTGRES_DB:-ismw_db}?sslmode=disable
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      AUTO_MIGRATE: "false"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  ismw_pgdata:

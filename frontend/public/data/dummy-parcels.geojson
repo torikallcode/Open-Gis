@@ -1,0 +1,93 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [110.36, -7.8],
+            [110.36, -7.801],
+            [110.3615, -7.801],
+            [110.3615, -7.8],
+            [110.36, -7.8]
+          ]
+        ]
+      },
+      "properties": {
+        "parcel_code": "PAR-001",
+        "land_use": "Permukiman",
+        "verification_status": "approved",
+        "survey_code": "SRV-2026-001",
+        "source": "Digitasi dummy"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [110.3615, -7.8],
+            [110.3615, -7.801],
+            [110.363, -7.801],
+            [110.363, -7.8],
+            [110.3615, -7.8]
+          ]
+        ]
+      },
+      "properties": {
+        "parcel_code": "PAR-002",
+        "land_use": "Sawah",
+        "verification_status": "submitted",
+        "survey_code": "SRV-2026-001",
+        "source": "Digitasi dummy"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [110.36, -7.801],
+            [110.36, -7.802],
+            [110.3615, -7.802],
+            [110.3615, -7.801],
+            [110.36, -7.801]
+          ]
+        ]
+      },
+      "properties": {
+        "parcel_code": "PAR-003",
+        "land_use": "Kebun",
+        "verification_status": "draft",
+        "survey_code": "SRV-2026-001",
+        "source": "Digitasi dummy"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [110.3615, -7.801],
+            [110.3615, -7.802],
+            [110.363, -7.802],
+            [110.363, -7.801],
+            [110.3615, -7.801]
+          ]
+        ]
+      },
+      "properties": {
+        "parcel_code": "PAR-004",
+        "land_use": "Permukiman",
+        "verification_status": "rejected",
+        "survey_code": "SRV-2026-001",
+        "source": "Digitasi dummy"
+      }
+    }
+  ]
+}

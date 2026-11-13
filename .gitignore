@@ -1,0 +1,23 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Dependencies & build output
+node_modules/
+dist/
+coverage/
+backend/bin/
+*.exe
+*.test
+
+# Local runtime data
+storage/*
+!storage/.gitkeep
+backend/tmp/
+
+# Logs & OS files
+*.log
+.DS_Store
+Thumbs.db

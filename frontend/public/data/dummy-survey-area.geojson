@@ -1,0 +1,26 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [110.3592, -7.7992],
+            [110.3592, -7.8028],
+            [110.3638, -7.8028],
+            [110.3638, -7.7992],
+            [110.3592, -7.7992]
+          ]
+        ]
+      },
+      "properties": {
+        "name": "Area Kerja Sleman (dummy)",
+        "project_code": "PRJ-DEMO-001",
+        "survey_code": "SRV-2026-001",
+        "note": "Batas area contoh. Bukan data resmi."
+      }
+    }
+  ]
+}
